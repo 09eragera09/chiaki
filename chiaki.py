@@ -41,7 +41,7 @@ async def on_message(message):
         await client.send_message(message.channel, 'Your net is working, %s-kun' % message.author.name)
     elif message.content.startswith('!malid'):
         tmp = message.content.split()
-        if tmp.length >= 2:
+        if len(tmp) >= 2:
             await client.send_message(message.channel, 'Here\'s your MAL ID, http://myanimelist.net/animelist/%s' % tmp[1])
         else:
             await client.send_message(message.channel, 'Please enter the right number of arguments and try again')
