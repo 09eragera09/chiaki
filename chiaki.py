@@ -47,4 +47,5 @@ async def on_message(message):
             await client.send_message(message.channel, 'Please enter the right number of arguments and try again')
 
 token = open('token', 'r').read()
-client.run('token')
+token = token.rstrip('\n')
+client.run(token)
