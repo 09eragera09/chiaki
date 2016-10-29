@@ -1,6 +1,7 @@
 import discord
 import asyncio
 import random
+import sys
 from time import time
 
 client = discord.Client()
@@ -45,7 +46,17 @@ async def on_message(message):
             await client.send_message(message.channel, 'Here\'s your MAL ID, http://myanimelist.net/animelist/%s' % tmp[1])
         else:
             await client.send_message(message.channel, 'Please enter the right number of arguments and try again')
-
+    elif message.content.startswith('!kill'):
+        await client.send_message(message.channel, 'Chiaki will now exit.')
+        sys.exit()
+    elif message.content.startswith('!urban'):
+        tmp = message.content.split()
+        if len(tmp) >= 2:
+            await client.send_message(message.channel, 'http://www.urbandictionary.com/define.php?term=%s' % tmp[1])
+        else:
+            await client.send_message(message.channel, 'Please enter an argument.')
+    elif message.content.startswith('!help'):
+        await client.send_message(message.channel, 'This doesnt contain anything. _yet_')
 token = open('token', 'r').read()
 token = token.rstrip('\n')
 client.run(token)
