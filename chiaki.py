@@ -7,7 +7,9 @@ from time import time
 client = discord.Client()
 
 global bot_startup
-bot_startup = 0
+
+def getTime():
+    return time()
 
 def calculateTime(totalseconds):
     totalminutes = int(totalseconds/60)
@@ -39,7 +41,8 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('-' * 20)
-    bot_startup = time()
+    global bot_startup
+    bot_startup = getTime()
 @client.event
 async def on_message(message):
     if message.content.startswith('!test'):
@@ -73,16 +76,17 @@ async def on_message(message):
     elif message.content.startswith('!help'):
         await client.send_message(message.channel, 'This doesnt contain anything. _yet_')
     elif message.content.startswith('!uptime'):
-        seconds = int(time() - bot_startup)
+        currentTime = getTime()
+        seconds = int(currentTime - bot_startup)
         minutes = seconds / 60
         hours = minutes / 60
         days = hours / 24
         if seconds < 60:
             await client.send_message(message.channel, 'Chiaki has been up for **%d** seconds.' % seconds)
-        elif seconds >= 60:
+        elif seconds <= 3600:
             division = divide(seconds, 60)
             await client.send_message(message.channel, 'Chiaki has been up for **%d** minutes and **%d** seconds' % (division[0], division[1]))
-        elif minutes >= 60:
+        elif seconds <= 3600 * 24:
             division_h = divide(minutes, 60)
             seconds = division_h[2] * 60
             division = divide(seconds, 60)
