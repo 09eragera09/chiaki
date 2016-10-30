@@ -27,7 +27,7 @@ async def mute(member):
     if not "muted" in [x.name for x in member.server.roles]:
         await client.create_role(member.server, name="muted", permissions=discord.permissions.none())
         await client.send_message(member.server.owner, "The `muted` role has been created for moderation purposes. Please push it up the list for more effective usage")
-    await.client.add_roles(member, [x for x in member.server.roles if x.name == "muted"])
+    await client.add_roles(member, [x for x in member.server.roles if x.name == "muted"])
     silences[member.id] = [member.server.id, getTime()]
 
 async def unmute(member):
