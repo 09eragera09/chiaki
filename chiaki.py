@@ -22,13 +22,19 @@ async def prune(message):
         for x in message.mentions:
             count = 0
             for y in reversed(client.messages):
-                if message.server == y.server and y.author = x
+                if message.server == y.server and y.author == x:
                     to_delete.append(y)
                     count += 1
                 if count == num:
                     break
     else:
-        to_delete = reversed(client.messages)[:num]
+        count = 0
+        for x in reversed(client.messages):
+            if message.server == x.server:
+                to_delete.append(x)
+                count += 1
+            if count == num:
+                break
     await client.delete_messages(to_delete)
 
 def getTime():
@@ -40,7 +46,7 @@ def checkForAuth(message, perm):
         auth = True
 
     else:
-        if perm == "manage_messages"
+        if perm == "manage_messages":
             for x in message.author.roles:
                 if x.permissions.manage_messages:
                     auth = True
@@ -75,7 +81,7 @@ async def mute(member):
 
 async def unmute(member):
     if not "Muted" in [x.name for x in member.roles]:
-        await client.send_message(message.channel, "This user is not Muted, so not unMuted")
+        await client.send_message(message.channel, "This user is not Muted, so not unmuted")
     await client.remove_roles(member, [x for x in member.roles if x.name == "Muted"][0])
 
 def calculateTime(totalseconds):
@@ -193,7 +199,7 @@ async def on_message(message):
         if authorized:
             for member in message.mentions:
                 await unmute(member)
-            await client.send_message(message.channel, "%s has been unMuted" % member)
+            await client.send_message(message.channel, "%s has been unmuted" % member)
 
             #MODERATION END +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
