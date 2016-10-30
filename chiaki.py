@@ -9,7 +9,7 @@ def getTime():
 
 def checkForAuth(message, perm):
     auth = False
-    if message.author = message.server.owner or message.author.id = "94374744576512000":
+    if message.author == message.server.owner or message.author.id == "94374744576512000":
         auth = True
 
     else:
@@ -92,7 +92,7 @@ async def on_message(message):
             await client.send_message(message.channel, 'Please enter a username')
 
     elif message.content.startswith('!sleep'):
-        if message.author.id = "94374744576512000":
+        if message.author.id == "94374744576512000":
             await client.send_message(message.channel, 'Era-kun, carry me to my bed')
             sys.exit()
         else:
