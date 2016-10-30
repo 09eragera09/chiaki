@@ -1,3 +1,5 @@
+#!/usr/local/bin/python3
+
 import discord
 import asyncio
 import random
@@ -13,10 +15,20 @@ def checkForAuth(message, perm):
         auth = True
 
     else:
-        for x in message.author.roles:
-            if perm in x.permissions:
-                auth = True
-                break
+        if perm == "kick_members":
+            for x in message.author.roles:
+                if x.permissions.kick_members:
+                    auth = True
+                    break
+        elif perm == "ban_members":
+            for x in message.author.roles:
+                if x.permissions.ban_members:
+                    auth = True
+                    break
+        elif perm == "manage_roles":
+            for x in message.author.roles:
+                if x.permissions.manage_roles:
+                    auth = True
     return auth
 
 client = discord.Client()
@@ -25,15 +37,15 @@ global bot_startup
 
 async def mute(member):
     if not "muted" in [x.name for x in member.server.roles]:
-        await client.create_role(member.server, name="muted", permissions=discord.permissions.none())
+        await client.create_role(member.server, name="muted", permissions=discord.Permissions.none())
         await client.send_message(member.server.owner, "The `muted` role has been created for moderation purposes. Please push it up the list for more effective usage")
-    await client.add_roles(member, [x for x in member.server.roles if x.name == "muted"])
-    silences[member.id] = [member.server.id, getTime()]
+    await client.add_roles(member, [x for x in member.server.roles if x.name == "muted"][0])
+    silences[member.id] = [member.server.id, time()]
 
 async def unmute(member):
     if not "muted" in [x.name for x in member.roles]:
         await client.send_message(message.channel, "This user is not muted, so not unmuted")
-    await client.remove_roles(member, [x for x in member.roles if x.name == "muted"])
+    await client.remove_roles(member, [x for x in member.roles if x.name == "muted"][0])
 
 def calculateTime(totalseconds):
     totalminutes = int(totalseconds/60)
@@ -67,6 +79,8 @@ async def on_ready():
     print('-' * 20)
     global bot_startup
     bot_startup = getTime()
+    game = ['Send Help']
+    client.change_presence(game = game[0])
 @client.event
 async def on_message(message):
     if message.content.startswith('!test'):
@@ -126,39 +140,49 @@ async def on_message(message):
             await client.send_message(message.channel, 'Chiaki has been up for **%d** days, **%d** hours, **%d** minutes and **%d** seconds. Oh, it seems she\'s sleeping while standing.' % (time[0], time[1], time[2], time[3]))
 
     elif message.content.startswith('!ban'):
-        authorized = checkForAuth(message, ban_members)
+        authorized = checkForAuth(message, "ban_members")
         await client.delete_message(message)
         if authorized:
             for member in stuff:
                 await ban(member)
+            await client.send_message(message.channel, "%s has been banned" % member)
         else:
             await client.send_message(message.channel, "You are not authorized to use the ban command.")
 
     elif message.content.startswith('!kick'):
-        authorized = checkForAuth(message, kick_members)
+
+        authorized = checkForAuth(message, "kick_members")
         await client.delete_message(message)
         if authorized:
-            for memeber in message.mentions:
+            for member in message.mentions:
                 await kick(member)
+            await client.send_message(message.channel, "%s has been kicked" % member)
+
         else:
             await client.send_message(message.channel, "You are not authorized to use the kick command")
     elif message.content.startswith('!mute'):
-        authorized = checkForAuth(message, manage_roles)
+        authorized = checkForAuth(message, "manage_roles")
         if authorized:
-            for memeber in message.mentions:
+            for member in message.mentions:
                 await mute(member)
+            await client.send_message(message.channel, "%s has been muted" % member)
 
     elif message.content.startswith('!unmute'):
-        authorized = checkForAuth(message, manage_roles)
+        authorized = checkForAuth(message, "manage_roles")
         if authorized:
             for member in message.mentions:
                 await unmute(member)
+            await client.send_message(message.channel, "%s has been unmuted" % member)
 
     elif message.content.startswith('!help'):
-        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!8ball` the magic 8ball will tell reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`malid` to get your animelist from myanimelist\n\nCommands for Moderators\n`!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say. Supply with Discord Username\n\nCommand for Era-kun only\n`!sleep`"
+        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!malid` to get your animelist from myanimelist\n\nCommands for Moderators\n`!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say. Supply with Discord Username\n\nCommand for Era-kun only\n`!sleep`"
         await client.send_message(message.channel, helptext)
 
+    elif message.content.startswith("!source"):
+        await client.send_message(message.channel, "Here's my source code https://github.com/09eragera09/chiaki/blob/master/chiaki.py")
 
+    elif message.content.startswith("!invite"):
+        await client.send_message(message.channel, "Here's my invite link https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot")
 
 token = open('token', 'r').read()
 token = token.rstrip('\n')
