@@ -35,6 +35,7 @@ async def prune(message):
                 count += 1
             if count == num:
                 break
+
     await client.delete_messages(to_delete)
 
 def getTime():
@@ -124,6 +125,24 @@ async def on_message(message):
         await client.send_message(message.channel, 'This is a test response')
 
         #FUN STUFF +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    elif message.content.startswith('!lenny'):
+        await client.send_message(message.channel, '( ͡° ͜ʖ ͡°)')
+
+    elif message.content.startswith('!shrug'):
+        await client.send_message(message.channel, '¯\_(ツ)_/¯')
+
+    elif message.content.startswith('!fiteme'):
+        await client.send_message(message.channel, '(ง ͠° ͟ل͜ ͡°)ง')
+
+    elif message.content.startswith('!hug'):
+        await client.send_message(message.channel, '༼ つ ◕_◕ ༽つ')
+
+    elif message.content.startswith('!flip'):
+        await client.send_message(message.channel, '(╯°□°）╯︵ ┻━┻')
+
+    elif message.content.startswith('!unflip'):
+        await client.send_message(message.channel, '┬──┬ ノ( ゜-゜ノ)')
 
     elif message.content.startswith('!8ball'):
         magicball = ['It is certain', 'It is decidedly so', 'Without a doubt',
@@ -241,7 +260,7 @@ async def on_message(message):
         await client.send_message(message.channel, 'Your net is working, %s-kun' % message.author.name)
 
     elif message.content.startswith('!help'):
-        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!malid` to get your animelist from myanimelist\n\nCommands for Moderators\n`!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say. Supply with Discord Username\n\nCommand for Era-kun only\n`!sleep`"
+        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective  \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`"
         await client.send_message(message.channel, helptext)
 
     elif message.content.startswith("!source"):
