@@ -189,7 +189,7 @@ async def on_message(message):
         authorized = checkForAuth(message, "ban_members")
         await client.delete_message(message)
         if authorized:
-            for member in stuff:
+            for member in message.mentions:
                 await ban(member)
             await client.send_message(message.channel, "%s has been banned" % member)
         else:
