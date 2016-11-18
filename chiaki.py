@@ -1,12 +1,14 @@
-#!/usr/local/bin/python3
-
 import discord
 import asyncio
 import random
 import sys
+import threading
 from time import time
 
-
+async def reminder(author, the_list):
+    sentence = ' '.join(the_list)
+    print("It worked till here")
+    await client.send_message(author, sentence)
 
 async def prune(message):
     splitted = message.content.split()
@@ -251,17 +253,52 @@ async def on_message(message):
 
     elif message.content.startswith('!sleep'):
         if message.author.id == "94374744576512000":
-            await client.send_message(message.channel, 'Era-kun, carry me to my bed')
+            await client.send_message(message.channel, 'Era-kun, carry me to bed')
             sys.exit()
         else:
             await client.send_message(message.channel, "Mou! You're not Era-kun.")
 
     elif message.content.startswith('!ping'):
-        await client.send_message(message.channel, 'Your net is working, %s-kun' % message.author.name)
+        if message.author.id == "94374744576512000":
+            ping = await client.send_message(message.channel, 'Your net is working, Era-kun')
+            tmptime = getTime()
+            await client.get_message(message.channel, ping.id)
+            tmptime1 = getTime()
+            pingtime = tmptime1 - tmptime
+            pingtime *= 1000
+            await client.edit_message(ping, new_content="Your net is working, Era-kun. `%dms`" % pingtime)
+        else:
+            ping = await client.send_message(message.channel, 'Pong!')
+            tmptime = getTime()
+            await client.get_message(message.channel, ping.id)
+            tmptime1 = getTime()
+            pingtime = tmptime1 - tmptime
+            pingtime *= 1000
+            await client.edit_message(ping, new_content="Pong! `%dms`" % pingtime)
+
+    elif message.content.startswith('!remindme'):
+        splitted = message.content.split()
+        try:
+            tmptime = int(splitted[1])
+        except:
+            await client.send_message(message.channel, "Please try again. It should be in the form of `!remindme (a number) (hours/minutes/seconds) (a message)`")
+        if str(splitted[2]) == "seconds":
+            threading.Timer(tmptime, reminder, message.author, splitted[3:])
+            await client.send_message(message.channel, "You will be send a reminder through DM in %s seconds!" % splitted[1])
+        elif str(splitted[2]) == "minutes":
+            tmptime *= 60
+            threading.Timer(tmptime, reminder, message.author, splitted[3:])
+            await client.send_message(message.channel, "You will be send a reminder through DM in %s minutes!" % splitted[1])
+        elif str(splitted[3]) == "hours":
+            tmptime = tmptime * 60 * 60
+            threading.Timer(tmptime, reminder, message.author, splitted[3:])
+            await client.send_message(message.channel, "You will be send a reminder through DM in %s hours!" % splitted[1])
+        else:
+            await client.send_message(message.channel, "Please try again. It should be in the form of `!remindme (a number) (hours/minutes/seconds) (a message)`")
 
     elif message.content.startswith('!help'):
-        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective  \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`"
-        await client.send_message(message.channel, helptext)
+        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective  \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
+        await client.send_message(message.author, helptext)
 
     elif message.content.startswith("!source"):
         await client.send_message(message.channel, "Here's my source code https://github.com/09eragera09/chiaki/blob/master/chiaki.py")
