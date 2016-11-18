@@ -3,16 +3,11 @@ import asyncio
 import random
 import sys
 import threading
-from time import time
+from time import time, strftime
 
-async def reminder(the_list):
+async def reminder(author, the_list, date):
     sentence = ' '.join(the_list)
-    print("It worked till here")
-    await client.send_message(message.author, sentence)
-
-#def timer(tmptime, reminder, author, the_list):
-#    threading.Timer(tmptime, reminder, author, the_list)
-#    return None
+    await client.send_message(author, "You had set a reminder on %s for the following message: %s" % (date, sentence))
 
 async def prune(message):
     splitted = message.content.split()
@@ -287,30 +282,36 @@ async def on_message(message):
             pingtime *= 1000
             await client.edit_message(ping, new_content="Pong! `%dms`" % pingtime)
 
-    elif message.content.startswith('!remindme'):
-        dict1 = {'author':message.author}
+    elif message.content.startswith('!remind'):
         splitted = message.content.split()
-        try:
-            tmptime = int(splitted[1])
-        except:
-            await client.send_message(message.channel, "Please try again. It should be in the form of `!remindme (a number) (hours/minutes/seconds) (a message)`")
-        if str(splitted[2]) == "seconds":
-            threading.Timer(tmptime, reminder, splitted[3:]).start()
-            #tmp = timer(tmptime, reminder, message.author, splitted[3:])
-            await client.send_message(message.channel, "You will be send a reminder through DM in %s seconds!" % splitted[1])
-        elif str(splitted[2]) == "minutes":
-            tmptime *= 60
-            threading.Timer(tmptime, reminder, splitted[3:]).start()
-            await client.send_message(message.channel, "You will be send a reminder through DM in %s minutes!" % splitted[1])
-        elif str(splitted[3]) == "hours":
-            tmptime = tmptime * 60 * 60
-            threading.Timer(tmptime, reminder, splitted[3:]).start()
-            await client.send_message(message.channel, "You will be send a reminder through DM in %s hours!" % splitted[1])
+        try_again = "Please try again. It should be in the form of `!remind (a number) (hours/minutes/seconds) (a message)`"
+        if len(splitted) >= 4:
+            try:
+                tmptime = int(splitted[1])
+            except:
+                await client.send_message(message.channel, try_again)
+            date = strftime("%Y-%m-%d %H:%M")
+            if splitted[2] in ["second", "seconds"]:
+                await client.send_message(message.channel, "You will be send a reminder through DM in %s second(s)!" % splitted[1])
+                await asyncio.sleep(tmptime)
+                await reminder(message.author, splitted[3:], date)
+            elif splitted[2] in ["minute", "minutes"]:
+                tmptime *= 60
+                await client.send_message(message.channel, "You will be send a reminder through DM in %s minute(s)!" % splitted[1])
+                await asyncio.sleep(tmptime)
+                await reminder(message.author, splitted[3:], date)
+            elif splitted[2] in ["hour", "hours"]:
+                tmptime = tmptime * 60 * 60
+                await client.send_message(message.channel, "You will be send a reminder through DM in %s hour(s)!" % splitted[1])
+                await asyncio.sleep(tmptime)
+                await reminder(message.author, splitted[3:], date)
+            else:
+                await client.send_message(message.channel, try_again)
         else:
-            await client.send_message(message.channel, "Please try again. It should be in the form of `!remindme (a number) (hours/minutes/seconds) (a message)`")
+            await client.send_message(message.channel, try_again)
 
     elif message.content.startswith('!help'):
-        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective  \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
+        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!remind` will let you set a reminder.\n`!invite` lets you get the bot invite link\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective  \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
         await client.send_message(message.author, helptext)
 
     elif message.content.startswith("!source"):
