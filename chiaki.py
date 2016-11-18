@@ -5,10 +5,14 @@ import sys
 import threading
 from time import time
 
-async def reminder(author, the_list):
+async def reminder(the_list):
     sentence = ' '.join(the_list)
     print("It worked till here")
-    await client.send_message(author, sentence)
+    await client.send_message(message.author, sentence)
+
+#def timer(tmptime, reminder, author, the_list):
+#    threading.Timer(tmptime, reminder, author, the_list)
+#    return None
 
 async def prune(message):
     splitted = message.content.split()
@@ -127,6 +131,13 @@ async def on_message(message):
         await client.send_message(message.channel, 'This is a test response')
 
         #FUN STUFF +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    elif message.content.startswith('!rr'):
+        luck = random.randint(1,7)
+        if luck == 6:
+            await client.send_message(message.channel, "You're in luck! You hit the blank!")
+        else:
+            await client.send_message(message.channel, "Too bad. You were unlucky. Nagato is disappointed.")
+
 
     elif message.content.startswith('!lenny'):
         await client.send_message(message.channel, '( ͡° ͜ʖ ͡°)')
@@ -277,21 +288,23 @@ async def on_message(message):
             await client.edit_message(ping, new_content="Pong! `%dms`" % pingtime)
 
     elif message.content.startswith('!remindme'):
+        dict1 = {'author':message.author}
         splitted = message.content.split()
         try:
             tmptime = int(splitted[1])
         except:
             await client.send_message(message.channel, "Please try again. It should be in the form of `!remindme (a number) (hours/minutes/seconds) (a message)`")
         if str(splitted[2]) == "seconds":
-            threading.Timer(tmptime, reminder, message.author, splitted[3:])
+            threading.Timer(tmptime, reminder, splitted[3:]).start()
+            #tmp = timer(tmptime, reminder, message.author, splitted[3:])
             await client.send_message(message.channel, "You will be send a reminder through DM in %s seconds!" % splitted[1])
         elif str(splitted[2]) == "minutes":
             tmptime *= 60
-            threading.Timer(tmptime, reminder, message.author, splitted[3:])
+            threading.Timer(tmptime, reminder, splitted[3:]).start()
             await client.send_message(message.channel, "You will be send a reminder through DM in %s minutes!" % splitted[1])
         elif str(splitted[3]) == "hours":
             tmptime = tmptime * 60 * 60
-            threading.Timer(tmptime, reminder, message.author, splitted[3:])
+            threading.Timer(tmptime, reminder, splitted[3:]).start()
             await client.send_message(message.channel, "You will be send a reminder through DM in %s hours!" % splitted[1])
         else:
             await client.send_message(message.channel, "Please try again. It should be in the form of `!remindme (a number) (hours/minutes/seconds) (a message)`")
