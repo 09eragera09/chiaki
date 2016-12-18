@@ -3,11 +3,14 @@ import asyncio
 import random
 import sys
 import threading
+from wand.drawing import Drawing
+from wand.image import Image
+from wand.color import Color
 from time import time, strftime
 
 async def reminder(author, the_list, date):
     sentence = ' '.join(the_list)
-    await client.send_message(author, "You had set a reminder on %s for the following message: %s" % (date, sentence))
+    await client.send_message(author, "You had set a reminder on %s GMT for the following message: %s" % (date, sentence))
 
 async def prune(message):
     splitted = message.content.split()
@@ -311,7 +314,7 @@ async def on_message(message):
             await client.send_message(message.channel, try_again)
 
     elif message.content.startswith('!help'):
-        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!remind` will let you set a reminder.\n`!invite` lets you get the bot invite link\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective  \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
+        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!remind` will let you set a reminder.\n`!invite` lets you get the bot invite link\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!welcome` to test the welcome card\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective emojis \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
         await client.send_message(message.author, helptext)
 
     elif message.content.startswith("!source"):
@@ -319,6 +322,30 @@ async def on_message(message):
 
     elif message.content.startswith("!invite"):
         await client.send_message(message.channel, "Here's my invite link https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot")
+    elif message.content.startswith("!shitwaifu"):
+        await client.send_message(message.channel, "http://azelf.net/mfw/shitwaifu.png")
+    elif message.content.startswith("!welcome"):
+        with Drawing() as draw:
+            draw.font_size = 40
+            draw.fill_color = Color('white')
+            draw.font = 'Whitney_Medium.ttf'
+            draw.text(x=510, y=350, body="User: %s#%s" % (message.author.name, message.author.discriminator))
+            with Image(filename='KUD_3.png') as image:
+                draw(image)
+                image.save(filename='test.png')
+                await client.send_file(message.author.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at #readme" % message.author.mention)        
+
+@client.event
+async def on_member_join(member):
+    with Drawing() as draw:
+        draw.font_size = 40
+        draw.fill_color = Color('white')
+        draw.font = 'Whitney_Medium.ttf'
+        draw.text(x=510, y=350, body="User: %s#%s" % (member.name, member.discriminator))
+        with Image(filename='KUD_3.png') as image:
+            draw(image)
+            image.save(filename='test.png')
+            await client.send_file(member.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at #readme" % member.mention)
 
 token = open('token', 'r').read()
 token = token.rstrip('\n')
