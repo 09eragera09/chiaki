@@ -8,6 +8,38 @@ from wand.image import Image
 from wand.color import Color
 from time import time, strftime
 
+def imageGen(member):
+    if len(member.name) > 15 and len(member.name) < 22:
+        with Drawing() as draw:
+            draw.font_size = 35
+            draw.fill_color = Color('white')
+            draw.font = 'Whitney_Medium.ttf'
+            draw.text(x=510, y=350, body="User: %s#%s" % (member.name, member.discriminator))
+            with Image(filename='KUD_3.png') as image:
+                draw(image)
+                image.save(filename='test.png')
+                return None
+    if len(member.name) >= 22:
+        with Drawing() as draw:
+            draw.font_size = 30
+            draw.fill_color = Color('white')
+            draw.font = 'Whitney_Medium.ttf'
+            draw.text(x=510, y=350, body="User: %s#%s" % (member.name, member.discriminator))
+            with Image(filename='KUD_3.png') as image:
+                draw(image)
+                image.save(filename='test.png')
+                return None
+    else:
+        with Drawing() as draw:
+            draw.font_size = 40
+            draw.fill_color = Color('white')
+            draw.font = 'Whitney_Medium.ttf'
+            draw.text(x=510, y=350, body="User: %s#%s" % (member.name, member.discriminator))
+            with Image(filename='KUD_3.png') as image:
+                draw(image)
+                image.save(filename='test.png')
+                return None
+
 async def reminder(author, the_list, date):
     sentence = ' '.join(the_list)
     await client.send_message(author, "You had set a reminder on %s GMT for the following message: %s" % (date, sentence))
@@ -263,6 +295,7 @@ async def on_message(message):
     elif message.content.startswith('!sleep'):
         if message.author.id == "94374744576512000":
             await client.send_message(message.channel, 'Era-kun, carry me to bed')
+            client.close()
             sys.exit()
         else:
             await client.send_message(message.channel, "Mou! You're not Era-kun.")
@@ -325,27 +358,13 @@ async def on_message(message):
     elif message.content.startswith("!shitwaifu"):
         await client.send_message(message.channel, "http://azelf.net/mfw/shitwaifu.png")
     elif message.content.startswith("!welcome"):
-        with Drawing() as draw:
-            draw.font_size = 40
-            draw.fill_color = Color('white')
-            draw.font = 'Whitney_Medium.ttf'
-            draw.text(x=510, y=350, body="User: %s#%s" % (message.author.name, message.author.discriminator))
-            with Image(filename='KUD_3.png') as image:
-                draw(image)
-                image.save(filename='test.png')
-                await client.send_file(message.author.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at #readme" % message.author.mention)        
+        imagegen = imageGen(message.author)
+        await client.send_file(message.author.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at #readme" % message.author.mention)
 
 @client.event
 async def on_member_join(member):
-    with Drawing() as draw:
-        draw.font_size = 40
-        draw.fill_color = Color('white')
-        draw.font = 'Whitney_Medium.ttf'
-        draw.text(x=510, y=350, body="User: %s#%s" % (member.name, member.discriminator))
-        with Image(filename='KUD_3.png') as image:
-            draw(image)
-            image.save(filename='test.png')
-            await client.send_file(member.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at #readme" % member.mention)
+    imagegen = imageGen(member)
+    await client.send_file(member.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at #readme" % member.mention)
 
 token = open('token', 'r').read()
 token = token.rstrip('\n')
