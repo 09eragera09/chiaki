@@ -1,4 +1,5 @@
 import discord
+import logging
 import asyncio
 import random
 import sys
@@ -364,7 +365,19 @@ async def on_message(message):
 async def on_member_join(member):
     imagegen = imageGen(member)
     await client.send_file(member.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at <#%s>" % (member.mention, [x.id for x in member.server.channels if x.name == "readme"][0]))
+    music_role = [x for x in member.server.roles if x.name == "Music"][0]
+    image_role = [x for x in member.server.roles if x.name == "Image"][0]
+    suggestion_role = [x for x in member.server.roles if x.name == "Suggestion"][0]
+    role_list = [music_role, image_role, suggestion_role]
+    await client.add_roles(member, role_list[0], role_list[1], role_list[2])
+    await asyncio.sleep(300)
+    await client.add_roles(member, [x for x in member.server.roles if x.name == "People"][0])
 
 token = open('token', 'r').read()
 token = token.rstrip('\n')
+logger = logging.getLogger('discord')
+logger.setLevel(logging.WARNING)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 client.run(token)
