@@ -114,7 +114,6 @@ async def mute(member):
         await client.create_role(member.server, name="Muted", permissions=discord.Permissions.none())
         await client.send_message(member.server.owner, "The `Muted` role has been created for moderation purposes. Please push it up the list for more effective usage")
     await client.add_roles(member, [x for x in member.server.roles if x.name == "Muted"][0])
-    #silences[member.id] = [member.server.id, time()]
 
 async def unmute(member):
     if not "Muted" in [x.name for x in member.roles]:
@@ -359,12 +358,12 @@ async def on_message(message):
         await client.send_message(message.channel, "http://azelf.net/mfw/shitwaifu.png")
     elif message.content.startswith("!welcome"):
         imagegen = imageGen(message.author)
-        await client.send_file(message.author.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at #readme" % message.author.mention)
+        await client.send_file(message.author.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at <#%s>" % (message.author.mention, [x.id for x in message.author.server.channels if x.name == "readme"][0]))
 
 @client.event
 async def on_member_join(member):
     imagegen = imageGen(member)
-    await client.send_file(member.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at #readme" % member.mention)
+    await client.send_file(member.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at <#%s>" % (member.mention, [x.id for x in member.server.channels if x.name == "readme"][0]))
 
 token = open('token', 'r').read()
 token = token.rstrip('\n')
