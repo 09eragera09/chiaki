@@ -153,8 +153,8 @@ async def on_ready():
     print('-' * 20)
     global bot_startup
     bot_startup = getTime()
-    game = ['Send Help']
-    client.change_presence(game = game[0])
+    #discord.Game.name = "Send Help"
+    #client.change_presence(game=discord.Game.name)
 @client.event
 async def on_message(message):
     if message.content.startswith('!test'):
