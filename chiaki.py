@@ -1,4 +1,4 @@
- sta import discord
+import discord
 import logging
 import asyncio
 import random
