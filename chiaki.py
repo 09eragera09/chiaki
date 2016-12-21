@@ -373,7 +373,7 @@ async def on_message(message):
             await client.send_message(message.channel, try_again)
 
     elif message.content.startswith('!help'):
-        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!userinfo` to check your or someone else's basic account info\n`!status` Prints the bot's status, WIP\n`!remind` will let you set a reminder.\n`!enlarge` enlarges custom emojis such as ones from NGNL\n`!invite` lets you get the bot invite link\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!welcome` to test the welcome card\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective emojis \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
+        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!userinfo` to check your or someone else's basic account info\n`!status` Prints the bot's status, WIP\n`!remind` will let you set a reminder.\n`!enlarge` enlarges custom emojis such as ones from NGNL`!invite` lets you get the bot invite link\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!welcome` to test the welcome card\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective emojis \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
         await client.send_message(message.author, helptext)
 
     elif message.content.startswith("!source"):
@@ -413,6 +413,31 @@ async def on_message(message):
             await userinfo(" ".join(splitted[1:]), message)
         else:
             await client.send_message(message.channel, "Unknown User")
+    elif message.content.startswith("!eval"):
+        splitted = message.content.split()
+        if message.author.id == "94374744576512000":
+            await client.send_message(message.channel, eval(splitted[1]))
+        else:
+            await client.send_message(message.channel, "Oh hey Era-ku-- Wait, You're not Era-kun!")
+
+    elif message.content.startswith("!avatar"):
+        splitted = message.content.split()
+        if len(splitted) == 1:
+            await client.send_message(message.channel, message.author.avatar_url)
+        elif message.mentions and not message.mention_everyone:
+            user = message.mentions[0]
+            await client.send_message(message.channel, user.avatar_url)
+        elif len(splitted) > 1:
+            name = " ".join(splitted[1:])
+            member = message.server.get_member_named(name)
+            await client.send_message(message.channel, member.avatar_url)
+        else:
+            await client.send_message(message.channel, "Unknown User")
+
+    elif message.content.startswith("!say"):
+        splitted = message.content.split()
+        if message.author.id == "94374744576512000":
+            await client.send_message(message.channel, " ".join(splitted[1:]))
 
 @client.event
 async def on_member_join(member):
@@ -434,4 +459,3 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 client.run(token)
-
