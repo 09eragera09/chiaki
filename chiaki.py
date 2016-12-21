@@ -460,8 +460,14 @@ async def on_member_join(member):
 
 @client.event
 async def on_voice_state_update(before, after):
-    await client.remove_roles(before, [x for x in after.server.roles if x.name == "Voice-Chat"][0])
-    await client.add_roles(after, [x for x in after.server.roles if x.name == "Voice-Chat"][0])
+    if not(after.voice.voice_channel):
+        await client.remove_roles(after, [x for x in after.server.roles if x.name == "Voice-Chat"][0])
+    elif (after.voice.voice_channel):
+        await client.add_roles(after, [x for x in after.server.roles if x.name == "Voice-Chat"][0])
+    #if before.voice.self_mute or not(before.voice.self_mute) or before.voice.self_deaf or not(before.voice.self_deaf):
+    #    await client.add_roles(before, [x for x in after.server.roles if x.name == "Voice-Chat"][0])
+
+
 
 token = open('token', 'r').read()
 token = token.rstrip('\n')
