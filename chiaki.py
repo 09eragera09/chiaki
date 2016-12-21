@@ -9,6 +9,23 @@ from wand.image import Image
 from wand.color import Color
 from time import time, strftime
 
+async def game_check(member):
+    if not(member.game):
+        return "Unknown"
+    else:
+        return str(member.game.name)
+
+async def userinfo(name, message):
+    member = message.server.get_member_named(name)
+    embed = discord.Embed(title="%s#%s" %(member.name, member.discriminator), description="  ", color=0x9A32CD)
+    embed.add_field(name="Created at", value=member.created_at.strftime("%A, %B %d, %Y, %I:%M %p"))
+    embed.add_field(name="Joined at", value=member.joined_at.strftime("%A, %B %d, %Y, %I:%M %p"))
+    embed.add_field(name="Status", value="%s" % member.status)
+    game = await game_check(member)
+    embed.add_field(name="Playing", value="%s" % game)
+    embed.set_thumbnail(url=member.avatar_url)
+    await client.send_message(message.channel, embed=embed)
+
 def imageGen(member):
     if len(member.name) > 15 and len(member.name) < 22:
         with Drawing() as draw:
@@ -196,6 +213,9 @@ async def on_message(message):
         'My sources say no', 'Outlook not so good', 'Very doubtful']
         await client.send_message(message.channel, random.choice(magicball))
 
+    elif message.content.startswith("!shitwaifu"):
+        await client.send_message(message.channel, "http://azelf.net/mfw/shitwaifu.png")
+
     elif message.content.startswith('!mal'):
         tmp = message.content.split()
         if len(tmp) >= 2:
@@ -347,7 +367,7 @@ async def on_message(message):
             await client.send_message(message.channel, try_again)
 
     elif message.content.startswith('!help'):
-        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!remind` will let you set a reminder.\n`!invite` lets you get the bot invite link\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!welcome` to test the welcome card\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective emojis \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
+        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!userinfo` to check your or someone else's basic account info\n`!status` Prints the bot's status, WIP\n`!remind` will let you set a reminder.\n`!invite` lets you get the bot invite link\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!welcome` to test the welcome card\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective emojis \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
         await client.send_message(message.author, helptext)
 
     elif message.content.startswith("!source"):
@@ -355,11 +375,38 @@ async def on_message(message):
 
     elif message.content.startswith("!invite"):
         await client.send_message(message.channel, "Here's my invite link https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot")
-    elif message.content.startswith("!shitwaifu"):
-        await client.send_message(message.channel, "http://azelf.net/mfw/shitwaifu.png")
+
     elif message.content.startswith("!welcome"):
         imagegen = imageGen(message.author)
         await client.send_file(message.author.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at <#%s>" % (message.author.mention, [x.id for x in message.author.server.channels if x.name == "readme"][0]))
+
+    elif message.content.startswith("!embed"):
+        embed = discord.Embed(title="This is test", description="Lorem Ipsum", color=0x9A32CD)
+        embed.add_field(name="Test", value="Lorem Ipsum")
+        embed.set_thumbnail(url=message.author.avatar_url)
+        await client.send_message(message.channel, embed=embed)
+
+    elif message.content.startswith("!status"):
+        embed = discord.Embed(title="%s#%s" %(client.user.name, client.user.discriminator), description="A shitty python bot", color=0x9A32CD)
+        embed.add_field(name="Owner", value="Era#4669", inline=False)
+        currentTime = getTime()
+        seconds = int(currentTime - bot_startup)
+        uptime = calculateTime(seconds)
+        embed.add_field(name="Uptime", value="%sd%sh%sm%ss" % (uptime[0], uptime[1], uptime[2], uptime[3]), inline=False)
+        embed.set_thumbnail(url=client.user.avatar_url)
+        await client.send_message(message.channel, embed=embed)
+
+    elif message.content.startswith("!userinfo"):
+        splitted = message.content.split()
+        if len(splitted) == 1:
+            await userinfo(message.author.name, message)
+        elif message.mentions and not message.mention_everyone:
+            user = message.mentions[0]
+            await userinfo(user.name, message)
+        elif len(splitted) > 1:
+            await userinfo(" ".join(splitted[1:]), message)
+        else:
+            await client.send_message(message.channel, "Unknown User")
 
 @client.event
 async def on_member_join(member):
@@ -376,7 +423,7 @@ async def on_member_join(member):
 token = open('token', 'r').read()
 token = token.rstrip('\n')
 logger = logging.getLogger('discord')
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
