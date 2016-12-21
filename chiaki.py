@@ -1,4 +1,4 @@
-import discord
+ sta import discord
 import logging
 import asyncio
 import random
@@ -256,7 +256,7 @@ async def on_message(message):
         emoji = splitted[1]
         emoji_id = emoji.split(":")[-1]
         emoji_id = emoji_id.rstrip('>')
-        await client.send_message(message.channel, "Emoji has been enlarged, https://discordapp.com/api/emojis/%s.png" % emoji_id)
+        await client.send_message(message.channel, "Custom emote has been enlarged, https://discordapp.com/api/emojis/%s.png" % emoji_id)
             #FUN END ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             #MODERATION++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -464,10 +464,6 @@ async def on_voice_state_update(before, after):
         await client.remove_roles(after, [x for x in after.server.roles if x.name == "Voice-Chat"][0])
     elif (after.voice.voice_channel):
         await client.add_roles(after, [x for x in after.server.roles if x.name == "Voice-Chat"][0])
-    #if before.voice.self_mute or not(before.voice.self_mute) or before.voice.self_deaf or not(before.voice.self_deaf):
-    #    await client.add_roles(before, [x for x in after.server.roles if x.name == "Voice-Chat"][0])
-
-
 
 token = open('token', 'r').read()
 token = token.rstrip('\n')
