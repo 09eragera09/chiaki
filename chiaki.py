@@ -244,6 +244,12 @@ async def on_message(message):
         else:
             await client.send_message(message.channel, 'Please enter an argument.')
 
+    elif message.content.startswith('!enlarge'):
+        splitted = message.content.split()
+        emoji = splitted[1]
+        emoji_id = emoji.split(":")[-1]
+        emoji_id = emoji_id.rstrip('>')
+        await client.send_message(message.channel, "Emoji has been enlarged, https://discordapp.com/api/emojis/%s.png" % emoji_id)
             #FUN END ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             #MODERATION++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -367,7 +373,7 @@ async def on_message(message):
             await client.send_message(message.channel, try_again)
 
     elif message.content.startswith('!help'):
-        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!userinfo` to check your or someone else's basic account info\n`!status` Prints the bot's status, WIP\n`!remind` will let you set a reminder.\n`!invite` lets you get the bot invite link\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!welcome` to test the welcome card\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective emojis \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
+        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!userinfo` to check your or someone else's basic account info\n`!status` Prints the bot's status, WIP\n`!remind` will let you set a reminder.\n`!enlarge` enlarges custom emojis such as ones from NGNL\n`!invite` lets you get the bot invite link\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!welcome` to test the welcome card\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective emojis \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
         await client.send_message(message.author, helptext)
 
     elif message.content.startswith("!source"):
@@ -423,7 +429,7 @@ async def on_member_join(member):
 token = open('token', 'r').read()
 token = token.rstrip('\n')
 logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
