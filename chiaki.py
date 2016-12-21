@@ -15,14 +15,21 @@ async def game_check(member):
     else:
         return str(member.game.name)
 
+async def role_name_grabber(member):
+    role_list = []
+    for role in member.roles:
+        role_list.append(role.name)
+    return role_list
+
 async def userinfo(name, message):
     member = message.server.get_member_named(name)
-    embed = discord.Embed(title="%s#%s" %(member.name, member.discriminator), description="  ", color=0x9A32CD)
-    embed.add_field(name="Created at", value=member.created_at.strftime("%A, %B %d, %Y, %I:%M %p"))
-    embed.add_field(name="Joined at", value=member.joined_at.strftime("%A, %B %d, %Y, %I:%M %p"))
-    embed.add_field(name="Status", value="%s" % member.status)
+    role_list = await role_name_grabber(member)
+    role_list_joined = ", ".join(role_list[1:])
     game = await game_check(member)
-    embed.add_field(name="Playing", value="%s" % game)
+    embed = discord.Embed(title="❯ Member Details", description="• Nickname: %s\n• Roles: %s\n• Joined at: %s" % (member.nick, role_list_joined, member.joined_at.strftime("%A, %B %d, %Y, %I:%M %p")), color=0x9A32CD)
+    embed.add_field(name="❯ User Details", value="• Created at: %s\n• Status: %s\n• Game: %s" % (member.created_at.strftime("%A, %B %d, %Y, %I:%M %p"), member.status, game), inline=True)
+    embed.set_author(name="%s#%s" %(member.name, member.discriminator), icon_url=member.avatar_url)
+    embed.set_footer(text="Userinfo, a method on the shitty python bot Chiaki", icon_url=client.user.avatar_url)
     embed.set_thumbnail(url=member.avatar_url)
     await client.send_message(message.channel, embed=embed)
 
@@ -450,6 +457,11 @@ async def on_member_join(member):
     await client.add_roles(member, role_list[0], role_list[1], role_list[2])
     await asyncio.sleep(300)
     await client.add_roles(member, [x for x in member.server.roles if x.name == "People"][0])
+
+@client.event
+async def on_voice_state_update(before, after):
+    await client.remove_roles(before, [x for x in after.server.roles if x.name == "Voice-Chat"][0])
+    await client.add_roles(after, [x for x in after.server.roles if x.name == "Voice-Chat"][0])
 
 token = open('token', 'r').read()
 token = token.rstrip('\n')
