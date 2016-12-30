@@ -5,5 +5,6 @@ python3.5 -V > /dev/null 2>&1 || {
 	echo >&2 "If you have python 3.5, use it to run run.py instead of this script."
 	exit 1; }
 
+pkill -9 chiaki
 python3.5 chiaki.py
 

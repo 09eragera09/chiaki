@@ -39,31 +39,31 @@ def imageGen(member):
         with Drawing() as draw:
             draw.font_size = 35
             draw.fill_color = Color('white')
-            draw.font = 'Whitney_Medium.ttf'
+            draw.font = 'assets/Whitney_Medium.ttf'
             draw.text(x=510, y=350, body="User: %s#%s" % (member.name, member.discriminator))
-            with Image(filename='KUD_3.png') as image:
+            with Image(filename='assets/KUD_3.png') as image:
                 draw(image)
-                image.save(filename='test.png')
+                image.save(filename='assets/test.png')
                 return None
     if len(member.name) >= 22:
         with Drawing() as draw:
             draw.font_size = 30
             draw.fill_color = Color('white')
-            draw.font = 'Whitney_Medium.ttf'
+            draw.font = 'assets/Whitney_Medium.ttf'
             draw.text(x=510, y=350, body="User: %s#%s" % (member.name, member.discriminator))
-            with Image(filename='KUD_3.png') as image:
+            with Image(filename='assets/KUD_3.png') as image:
                 draw(image)
-                image.save(filename='test.png')
+                image.save(filename='assets/test.png')
                 return None
     else:
         with Drawing() as draw:
             draw.font_size = 40
             draw.fill_color = Color('white')
-            draw.font = 'Whitney_Medium.ttf'
+            draw.font = 'assets/Whitney_Medium.ttf'
             draw.text(x=510, y=350, body="User: %s#%s" % (member.name, member.discriminator))
-            with Image(filename='KUD_3.png') as image:
+            with Image(filename='assets/KUD_3.png') as image:
                 draw(image)
-                image.save(filename='test.png')
+                image.save(filename='assets/test.png')
                 return None
 
 async def reminder(author, the_list, date):
@@ -392,7 +392,7 @@ async def on_message(message):
 
     elif message.content.startswith("!welcome"):
         imagegen = imageGen(message.author)
-        await client.send_file(message.author.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at <#%s>" % (message.author.mention, [x.id for x in message.author.server.channels if x.name == "readme"][0]))
+        await client.send_file(message.author.server, 'assets/test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at <#%s>" % (message.author.mention, [x.id for x in message.author.server.channels if x.name == "readme"][0]))
 
     elif message.content.startswith("!embed"):
         embed = discord.Embed(title="This is test", description="Lorem Ipsum", color=0x9A32CD)
@@ -427,6 +427,11 @@ async def on_message(message):
             await client.send_message(message.channel, eval(splitted[1]))
         else:
             await client.send_message(message.channel, "Oh hey Era-ku-- Wait, You're not Era-kun!")
+    elif message.content.startswith("!restart"):
+        if message.author.id == "94374744576512000":
+            subprocess.call(["./chiaki.sh"], shell=True)
+        else:
+            await client.send_message(message.channel, "Oh hey Era-ku-- Wait, You're not Era-kun!")
 
     elif message.content.startswith("!avatar"):
         splitted = message.content.split()
@@ -450,7 +455,7 @@ async def on_message(message):
 @client.event
 async def on_member_join(member):
     imagegen = imageGen(member)
-    await client.send_file(member.server, 'test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at <#%s>" % (member.mention, [x.id for x in member.server.channels if x.name == "readme"][0]))
+    await client.send_file(member.server, 'assets/test.png', content="Welcome to Kindly United Dreams, %s, Please read the rules over at <#%s>" % (member.mention, [x.id for x in member.server.channels if x.name == "readme"][0]))
     music_role = [x for x in member.server.roles if x.name == "Music"][0]
     image_role = [x for x in member.server.roles if x.name == "Image"][0]
     suggestion_role = [x for x in member.server.roles if x.name == "Suggestion"][0]
@@ -475,5 +480,5 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 try:
     client.run(token)
-except ConnectionResetError:
-    subprocess.call("./chiaki.sh")
+except:
+    subprocess.call(["./chiaki.sh"], shell=True)
