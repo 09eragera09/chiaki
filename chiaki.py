@@ -4,6 +4,7 @@ import asyncio
 import random
 import sys
 import threading
+import subprocess
 from wand.drawing import Drawing
 from wand.image import Image
 from wand.color import Color
@@ -171,8 +172,8 @@ async def unban(member):
 
 @client.event
 async def on_ready():
-    print("Logged in as")
-    print(client.user.name)
+    print("Logged in as %s" % client.user.name)
+    print("Chiaki will do her best!")
     print(client.user.id)
     print('-' * 20)
     global bot_startup
@@ -472,4 +473,7 @@ logger.setLevel(logging.INFO)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
-client.run(token)
+try:
+    client.run(token)
+except ConnectionResetError:
+    subprocess.call("./chiaki.sh")
