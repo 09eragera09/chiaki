@@ -451,6 +451,10 @@ async def on_message(message):
         splitted = message.content.split()
         if message.author.id == "94374744576512000":
             await client.send_message(message.channel, " ".join(splitted[1:]))
+    elif message.content.startswith("!subprocess"):
+        if message.author.id == "94374744576512000":
+            #wip
+            pass
 
 @client.event
 async def on_member_join(member):
