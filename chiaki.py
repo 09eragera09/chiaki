@@ -5,6 +5,7 @@ import random
 import sys
 import threading
 import subprocess
+from pybooru import Danbooru
 from wand.drawing import Drawing
 from wand.image import Image
 from wand.color import Color
@@ -132,6 +133,8 @@ def checkForAuth(message, perm):
     return auth
 
 client = discord.Client()
+danbooru = Danbooru('danbooru', username='09eragera09', api_key='X6PIMs2DWAOyNmKBZ6HFzjGWqaLMB7ydvsaDJMrTgmI')
+
 
 global bot_startup
 
@@ -381,8 +384,48 @@ async def on_message(message):
             await client.send_message(message.channel, try_again)
 
     elif message.content.startswith('!help'):
-        helptext = "There are a few commands you can use.\n`!ping` to check if your net is working ;)\n`!uptime` to check how long the bot has been up\n`!userinfo` to check your or someone else's basic account info\n`!status` Prints the bot's status, WIP\n`!remind` will let you set a reminder.\n`!enlarge` enlarges custom emojis such as ones from NGNL`!invite` lets you get the bot invite link\n`!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response\n`!urban` to check urbandictionary for the definition of a term\n`!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.\n`!welcome` to test the welcome card\n`!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective emojis \n\nCommands for Moderators\n`!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say.\n\nCommand for Era-kun only\n`!sleep`\nHere's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py\nTo invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"
-        await client.send_message(message.author, helptext)
+        userhelp = ["There are a few commands you can use.",
+        "• `!ping` to check if your net is working ;)",
+        "• `!uptime` to check how long the bot has been up",
+        "• `!userinfo` to check your or someone else's basic account info",
+        "• `!avatar` to get someone's avatar",
+        "• `!status` Prints the bot's status",
+        "• `!remind` will let you set a reminder.",
+        "• `!booru` searches Danbooru, accepts tags, use an underscore, for example, `!booru competition_swimsuit`",
+        "• `!sfw` same as above, but with safe images forced",
+        "• `!nsfw` same as above, but with explicit images forced",
+        "• `!enlarge` enlarges custom emojis such as ones from NGNL",
+        "• `!invite` lets you get the bot invite link",
+        "• `!8ball` the magic 8ball will reply with either an affirmative, negative or a non-commital response",
+        "• `!urban` to check urbandictionary for the definition of a term",
+        "• `!mal`, `!hb`, `!anilist` to get your animelist from myanimelist, hummingbird and anilist, respectively.",
+        "• `!welcome` to test the welcome card",
+        "• `!lenny`, `!fiteme`, `!flip`, `!unflip`, `!hug`, and `!shrug` reply with their respective emojis ",
+        "Here's my source code: https://github.com/09eragera09/chiaki/blob/master/chiaki.py",
+        "To invite me to your server, click this link: https://discordapp.com/oauth2/authorize?&client_id=241587632948248586&scope=bot"]
+
+        modhelp = ["• `!prune`, `!ban`, `!kick`, `!mute`, and `!unmute`, do exactly what they say."]
+
+        ownerhelp = ["Command for Era-kun only",
+        "• `!sleep` makes the bot go offline",
+        "• `!restart` makes the bot restart",
+        "• `subprocess` makes the bot execute commands in shell"]
+        userhelp = '\n'.join(userhelp)
+        embed = discord.Embed(title="❯ User Commands", description=userhelp, color=0x9A32CD)
+        embed.set_author(name="Command List", icon_url=message.author.avatar_url)
+        embed.set_footer(text="Chiaki is a shitty bot written in python", icon_url=client.user.avatar_url)
+        if message.author.id == "94374744576512000":
+            modhelp = '\n'.join(modhelp)
+            embed.add_field(name="❯ Mod Commands", value=modhelp)
+            ownerhelp = '\n'.join(ownerhelp)
+            embed.add_field(name="❯ Owner Commands", value=ownerhelp)
+            await client.send_message(message.author, embed=embed)
+        elif [x for x in message.server.roles if x.name == "Staff"][0] in message.author.roles:
+            modhelp = '\n'.join(modhelp)
+            embed.add_field(name="❯ Mod Commands", value=modhelp)
+            await client.send_message(message.author, embed=embed)
+        else:
+            await client.send_message(message.author, embed=embed)
 
     elif message.content.startswith("!source"):
         await client.send_message(message.channel, "Here's my source code https://github.com/09eragera09/chiaki/blob/master/chiaki.py")
@@ -451,10 +494,76 @@ async def on_message(message):
         splitted = message.content.split()
         if message.author.id == "94374744576512000":
             await client.send_message(message.channel, " ".join(splitted[1:]))
+
     elif message.content.startswith("!subprocess"):
         if message.author.id == "94374744576512000":
             #wip
             pass
+
+    elif message.content.startswith("!booru"):
+        splitted = message.content.split()
+        splitted = ' '.join(splitted[1:])
+        nsfw = [x for x in message.server.channels if x.name == "nsfw"][0]
+        images = [x for x in message.server.channels if x.name == "images"][0]
+        if message.channel in [nsfw, images]:
+            hentai_list = danbooru.post_list(limit=50, tags=splitted)
+            hentai = random.choice(hentai_list)
+            hentai_url = "http://danbooru.donmai.us" + hentai['file_url']
+            artist = hentai['tag_string_artist']
+            artist = artist.split("_")
+            artist = ' '.join(artist)
+            artist = artist.title()
+            embed = discord.Embed(title="Post drawn by %s" % artist, color=0x9A32CD)
+            embed.set_image(url=hentai_url)
+            rating = hentai['rating']
+            if message.channel == images:
+                if rating != 's':
+                    await client.send_message(message.channel, "This image is too lewd for this channel, try again.")
+                else:
+                    await client.send_message(message.channel, embed=embed)
+            else:
+                await client.send_message(message.channel, embed=embed)
+        else:
+            await client.send_message(message.channel, "Please try again in an image channel such as <#%s> or <#%s>" % (images.id, nsfw.id))
+
+    elif message.content.startswith("!nsfw"):
+        splitted = message.content.split()
+        splitted.append('rating:e')
+        splitted = ' '.join(splitted[1:])
+        nsfw = [x for x in message.server.channels if x.name == "nsfw"][0]
+        if message.channel == nsfw:
+            hentai_list = danbooru.post_list(limit=50, tags=splitted)
+            hentai = random.choice(hentai_list)
+            hentai_url = "http://danbooru.donmai.us" + hentai['file_url']
+            artist = hentai['tag_string_artist']
+            artist = artist.split("_")
+            artist = ' '.join(artist)
+            artist = artist.title()
+            embed = discord.Embed(title="Post drawn by %s" % artist, color=0x9A32CD)
+            embed.set_image(url=hentai_url)
+            await client.send_message(message.channel, embed=embed)
+        else:
+            await client.send_message(message.channel, "Please try again in <#%s>" % nsfw.id)
+
+    elif message.content.startswith("!sfw"):
+        splitted = message.content.split()
+        splitted.append('rating:s')
+        splitted = ' '.join(splitted[1:])
+        nsfw = [x for x in message.server.channels if x.name == "nsfw"][0]
+        images = [x for x in message.server.channels if x.name == "images"][0]
+        if message.channel in [nsfw, images]:
+            hentai_list = danbooru.post_list(limit=50, tags=splitted)
+            hentai = random.choice(hentai_list)
+            hentai_url = "http://danbooru.donmai.us" + hentai['file_url']
+            artist = hentai['tag_string_artist']
+            artist = artist.split("_")
+            artist = ' '.join(artist)
+            artist = artist.title()
+            embed = discord.Embed(title="Post drawn by %s" % artist, color=0x9A32CD)
+            embed.set_image(url=hentai_url)
+            await client.send_message(message.channel, embed=embed)
+        else:
+            await client.send_message(message.channel, "Please try again in an image channel such as <#%s> or <#%s>" % (images.id, nsfw.id))
 
 @client.event
 async def on_member_join(member):
