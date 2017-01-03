@@ -6,10 +6,32 @@ import sys
 import threading
 import subprocess
 from pybooru import Danbooru
+from pybooru import exceptions as pybooru_errors
 from wand.drawing import Drawing
 from wand.image import Image
 from wand.color import Color
 from time import time, strftime
+
+async def danbooru_def(channel, tags):
+    try:
+        try:
+            try:
+                hentai_list = danbooru.post_list(limit=50, tags=tags)
+            except pybooru_errors.PybooruHTTPError as e:
+                await client.send_message(channel, "You have entered too many tags. The !booru command only supports 2 tags while the others only 1.")
+            hentai = random.choice(hentai_list)
+            hentai_url = "http://danbooru.donmai.us" + hentai['file_url']
+            artist = hentai['tag_string_artist']
+            artist = artist.split("_")
+            artist = ' '.join(artist)
+            artist = artist.title()
+            rating = hentai['rating']
+        except IndexError as e:
+            await client.send_message(channel, "Nothing found. Please check the spelling or try again with different tags")
+        return (hentai_url, artist, rating)
+    except UnboundLocalError:
+        pass
+
 
 async def game_check(member):
     if not(member.game):
@@ -134,8 +156,6 @@ def checkForAuth(message, perm):
 
 client = discord.Client()
 danbooru = Danbooru('danbooru', username='09eragera09', api_key='X6PIMs2DWAOyNmKBZ6HFzjGWqaLMB7ydvsaDJMrTgmI')
-
-
 global bot_startup
 
 async def mute(member):
@@ -506,16 +526,9 @@ async def on_message(message):
         nsfw = [x for x in message.server.channels if x.name == "nsfw"][0]
         images = [x for x in message.server.channels if x.name == "images"][0]
         if message.channel in [nsfw, images]:
-            hentai_list = danbooru.post_list(limit=50, tags=splitted)
-            hentai = random.choice(hentai_list)
-            hentai_url = "http://danbooru.donmai.us" + hentai['file_url']
-            artist = hentai['tag_string_artist']
-            artist = artist.split("_")
-            artist = ' '.join(artist)
-            artist = artist.title()
+            hentai_url, artist, rating = await danbooru_def(message.channel, splitted)
             embed = discord.Embed(title="Post drawn by %s" % artist, color=0x9A32CD)
             embed.set_image(url=hentai_url)
-            rating = hentai['rating']
             if message.channel == images:
                 if rating != 's':
                     await client.send_message(message.channel, "This image is too lewd for this channel, try again.")
@@ -532,13 +545,7 @@ async def on_message(message):
         splitted = ' '.join(splitted[1:])
         nsfw = [x for x in message.server.channels if x.name == "nsfw"][0]
         if message.channel == nsfw:
-            hentai_list = danbooru.post_list(limit=50, tags=splitted)
-            hentai = random.choice(hentai_list)
-            hentai_url = "http://danbooru.donmai.us" + hentai['file_url']
-            artist = hentai['tag_string_artist']
-            artist = artist.split("_")
-            artist = ' '.join(artist)
-            artist = artist.title()
+            hentai_url, artist, rating = await danbooru_def(message.channel, splitted)
             embed = discord.Embed(title="Post drawn by %s" % artist, color=0x9A32CD)
             embed.set_image(url=hentai_url)
             await client.send_message(message.channel, embed=embed)
@@ -552,13 +559,7 @@ async def on_message(message):
         nsfw = [x for x in message.server.channels if x.name == "nsfw"][0]
         images = [x for x in message.server.channels if x.name == "images"][0]
         if message.channel in [nsfw, images]:
-            hentai_list = danbooru.post_list(limit=50, tags=splitted)
-            hentai = random.choice(hentai_list)
-            hentai_url = "http://danbooru.donmai.us" + hentai['file_url']
-            artist = hentai['tag_string_artist']
-            artist = artist.split("_")
-            artist = ' '.join(artist)
-            artist = artist.title()
+            hentai_url, artist, rating = await danbooru_def(message.channel, splitted)
             embed = discord.Embed(title="Post drawn by %s" % artist, color=0x9A32CD)
             embed.set_image(url=hentai_url)
             await client.send_message(message.channel, embed=embed)
