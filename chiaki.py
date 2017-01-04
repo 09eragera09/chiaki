@@ -155,7 +155,7 @@ def checkForAuth(message, perm):
     return auth
 
 client = discord.Client()
-danbooru = Danbooru('danbooru', username='09eragera09', api_key='X6PIMs2DWAOyNmKBZ6HFzjGWqaLMB7ydvsaDJMrTgmI')
+danbooru = Danbooru('danbooru')
 global bot_startup
 
 async def mute(member):

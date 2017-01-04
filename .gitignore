@@ -88,3 +88,6 @@ ENV/
 # Rope project settings
 .ropeproject
 token
+digital_ocean_promo
+to_do_list
+assets/
