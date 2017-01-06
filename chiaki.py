@@ -493,6 +493,7 @@ async def on_message(message):
     elif message.content.startswith("!restart"):
         if message.author.id == "94374744576512000":
             subprocess.call(["./chiaki.sh"], shell=True)
+            sys.exit()
         else:
             await client.send_message(message.channel, "Oh hey Era-ku-- Wait, You're not Era-kun!")
 
@@ -594,5 +595,5 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 try:
     client.run(token)
-except:
+except ConnectionResetError:
     subprocess.call(["./chiaki.sh"], shell=True)

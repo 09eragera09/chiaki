@@ -1,10 +1,14 @@
 #!/bin/bash
-
-python3.5 -V > /dev/null 2>&1 || {
-	echo >&2 "Python 3.5 doesn't seem to be installed.  Do you have a weird installation?"
-	echo >&2 "If you have python 3.5, use it to run run.py instead of this script."
-	exit 1; }
-
-pkill -9 chiaki
-python3.5 chiaki.py
+while [ true ]
+do
+    clear
+    echo "Updating Discord..."
+    sudo -H python3 -m pip install -U discord.py
+    echo "Discord Updated!!"
+    clear
+    echo "Starting Bot..."
+    python3 chiaki.py
+    clear
+    wait 4
+done
 
